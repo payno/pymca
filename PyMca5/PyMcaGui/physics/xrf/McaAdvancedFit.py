@@ -191,6 +191,8 @@ class McaAdvancedFit(qt.QWidget):
             tabConcentrationsLayout.setSpacing(0)
             line2 = Line(self.tabConcentrations, info="CONCENTRATIONS")
             self.concentrationsWidget = ConcentrationsWidget.Concentrations(self.tabConcentrations)
+            self.concentrationsWidget.concentrationsWidget.\
+                                secondaryCalculationLimit.setEnabled(False)
             tabConcentrationsLayout.addWidget(line2)
             tabConcentrationsLayout.addWidget(self.concentrationsWidget)
 
@@ -985,6 +987,8 @@ class McaAdvancedFit(qt.QWidget):
            self.concentrationsWidget = ConcentrationsWidget.Concentrations()
            self.concentrationsWidget.sigConcentrationsSignal.connect( \
                         self.__configureFromConcentrations)
+           self.concentrationsWidget.concentrationsWidget.\
+                            secondaryCalculationLimit.setEnabled(False)
         self.concentrationsWidget.setTimeFactor(self.mcafit.getLastTime(), signal=False)
         tool = self.concentrationsWidget
         #this forces update

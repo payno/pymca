@@ -300,12 +300,34 @@ class ConcentrationsWidget(qt.QWidget):
         self.attenuatorsCheckBox.setText("Consider attenuators in calculations")
         self.attenuatorsCheckBox.setDisabled(True)
         #Multilayer secondary excitation
-        self.secondaryCheckBox = qt.QCheckBox(self)
+        optimizationWidget = qt.QWidget(self)
+        optimizationWidgetLayout = qt.QHBoxLayout(optimizationWidget)
+        optimizationWidgetLayout.setContentsMargins(0, 0, 0, 0)
+        optimizationWidgetLayout.setSpacing(0)
+        optimizationWidgetLabel = qt.QLabel(optimizationWidget)
+        txt = "Minimum contribution to consider secondary excitation"
+        optimizationWidgetLabel.setText(txt)
+        self.secondaryCalculationLimit = qt.QDoubleSpinBox(optimizationWidget)
+        self.secondaryCalculationLimit.setMaximum(0.1)
+        self.secondaryCalculationLimit.setMinimum(0.0)
+        self.secondaryCalculationLimit.setValue(0.0)
+        self.secondaryCalculationLimit.setDecimals(8)
+        self.secondaryCalculationLimit.setSingleStep(0.00001)
+    
+        self.secondaryCheckBox = qt.QCheckBox(optimizationWidget)
+        optimizationWidgetLayout.addWidget(self.secondaryCheckBox)
+        optimizationWidgetLayout.addWidget(\
+                qt.HorizontalSpacer(optimizationWidget))        
+        optimizationWidgetLayout.addWidget(optimizationWidgetLabel)
+        optimizationWidgetLayout.addWidget(self.secondaryCalculationLimit)
+
+
         self.secondaryCheckBox.setText("Consider secondary excitation")
         self.tertiaryCheckBox = qt.QCheckBox(self)
         self.tertiaryCheckBox.setText("Consider tertiary excitation")
         layout.addWidget(self.attenuatorsCheckBox)
-        layout.addWidget(self.secondaryCheckBox)
+        layout.addWidget(optimizationWidget)
+        #layout.addWidget(self.secondaryCheckBox)
         layout.addWidget(self.tertiaryCheckBox)
         #XRFMC secondary excitation
         if XRFMC_FLAG:
@@ -447,6 +469,9 @@ class ConcentrationsWidget(qt.QWidget):
         else:
             ddict['usematrix'] = 0
 
+        ddict['secondarycalculationlimit'] = \
+                            self.secondaryCalculationLimit.value()
+
         if self.attenuatorsCheckBox.isChecked():
             ddict['useattenuators'] = 1
         else:
@@ -489,6 +514,9 @@ class ConcentrationsWidget(qt.QWidget):
     def setParameters(self, ddict, signal=None):
         if signal is None:
             signal = True
+        if 'secondarycalculationlimit' in ddict:
+            self.secondaryCalculationLimit.setValue(\
+                float(ddict['secondarycalculationlimit']))
         if 'usemultilayersecondary' in ddict:
             if ddict['usemultilayersecondary']:
                 if ddict['usemultilayersecondary'] == 2:
